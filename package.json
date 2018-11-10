@@ -1,6 +1,6 @@
 {
   "name": "@47ng/check-env",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "dist/index.js",
   "description": "Check that the critical environment variables are set",
   "license": "MIT",
@@ -19,16 +19,26 @@
   ],
   "scripts": {
     "test": "jest",
-    "build": "rm -rf ./dist && tsc"
+    "build": "rm -rf ./dist && tsc",
+    "size": "size-limit",
+    "prepublish": "yarn ci",
+    "ci": "yarn test && yarn build && yarn size"
   },
   "dependencies": {},
   "devDependencies": {
     "@types/jest": "^23.3.9",
     "@types/node": "^10.12.5",
     "jest": "^23.6.0",
+    "size-limit": "^0.21.0",
     "ts-jest": "^23.10.4",
     "typescript": "^3.1.6"
   },
+  "size-limit": [
+    {
+      "path": "./dist/index.js",
+      "size": "1 KB"
+    }
+  ],
   "jest": {
     "moduleFileExtensions": [
       "ts",
