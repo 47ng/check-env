@@ -21,7 +21,7 @@
     "test": "jest",
     "build": "rm -rf ./dist && tsc",
     "size": "size-limit",
-    "prepublish": "yarn ci",
+    "prepare": "yarn ci",
     "ci": "yarn test && yarn build && yarn size"
   },
   "dependencies": {},
