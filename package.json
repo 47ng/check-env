@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "test": "jest",
-    "build": "tsc"
+    "build": "rm -rf ./dist && tsc"
   },
   "dependencies": {
     "chalk": "^2.4.1"
