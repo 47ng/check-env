@@ -9,7 +9,7 @@ yarn add @47ng/check-env
 Early in your app startup code:
 
 ```js
-import checkEnv from 'check-env'
+import checkEnv from '@47ng/check-env'
 
 checkEnv({
   required: [
