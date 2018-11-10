@@ -1,10 +1,6 @@
-import chalk from 'chalk'
-
-type Envs = string | string[]
-
 export interface CheckEnvInput {
-  required?: Envs
-  optional?: Envs
+  required?: string | string[]
+  optional?: string | string[]
   noThrow?: boolean
 }
 
@@ -13,13 +9,11 @@ export interface CheckEnvInput {
 const testEnv = (name: string) => !!process.env[name]
 
 const displayError = (name: string) => {
-  console.error(
-    chalk.redBright(`❌  Missing required environment variable ${name}`)
-  )
+  console.error(`❌  Missing required environment variable ${name}`)
 }
 
 const displayWarning = (name: string) => {
-  console.warn(chalk.yellow(`⚠️  Environment variable ${name} is not set`))
+  console.warn(`⚠️  Environment variable ${name} is not set`)
 }
 
 const throwError = () => {
