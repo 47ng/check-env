@@ -5,18 +5,21 @@ type Envs = string | string[]
 export interface CheckEnvInput {
   required?: Envs
   optional?: Envs
+  noThrow?: boolean
 }
 
 // --
 
-const testEnv = (name: string) => process.env[name] !== undefined
+const testEnv = (name: string) => !!process.env[name]
 
 const displayError = (name: string) => {
-  console.error(chalk.red(`❌ Missing required environment variable ${name}`))
+  console.error(
+    chalk.redBright(`❌  Missing required environment variable ${name}`)
+  )
 }
 
 const displayWarning = (name: string) => {
-  console.warn(chalk.yellow(`⚠️ Environment variable ${name} is not set`))
+  console.warn(chalk.yellow(`⚠️  Environment variable ${name} is not set`))
 }
 
 const throwError = () => {
@@ -25,28 +28,25 @@ const throwError = () => {
 
 // --
 
-const checkEnv = ({ required, optional }: CheckEnvInput) => {
+const checkEnv = ({ required, optional, noThrow }: CheckEnvInput) => {
   if (!required && !optional) {
     return
   }
+  let _throw = false
 
   if (required) {
     if (typeof required === 'string') {
       if (!testEnv(required)) {
         displayError(required)
-        throwError()
+        _throw = true
       }
     } else {
-      let pass = true
       required.forEach(env => {
         if (!testEnv(env)) {
           displayError(env)
-          pass = false
+          _throw = true
         }
       })
-      if (!pass) {
-        throwError()
-      }
     }
   }
   if (optional) {
@@ -61,6 +61,9 @@ const checkEnv = ({ required, optional }: CheckEnvInput) => {
         }
       })
     }
+  }
+  if (_throw && !noThrow) {
+    throwError()
   }
 }
 

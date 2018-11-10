@@ -1,8 +1,22 @@
 {
   "name": "@47ng/check-env",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "description": "Check that the critical environment variables are set",
   "license": "MIT",
+  "author": {
+    "name": "François Best",
+    "email": "francois@francoisbest.com",
+    "url": "https://francoisbest.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/47ng/check-env"
+  },
+  "keywords": [
+    "environment",
+    "environment-variables"
+  ],
   "scripts": {
     "test": "jest",
     "build": "rm -rf ./dist && tsc"
