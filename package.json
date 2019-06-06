@@ -13,6 +13,9 @@
     "type": "git",
     "url": "https://github.com/47ng/check-env"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "environment",
     "environment-variables"
