@@ -18,8 +18,11 @@ const displayWarning = (name: string) => {
   console.warn(`⚠️  Environment variable ${name} is not set`)
 }
 
-const throwError = () => {
-  throw new Error('Some environment variables are missing')
+const throwError = (missing: string[]) => {
+  const message = `Some required environment variables are missing: ${missing.join(
+    ', '
+  )}`
+  throw new Error(message)
 }
 
 // --
@@ -34,19 +37,19 @@ const checkEnv = ({
   if (!required && !optional) {
     return
   }
-  let _throw = false
+  let missing = []
 
   if (required) {
     if (typeof required === 'string') {
       if (!testEnv(required)) {
         logError(required)
-        _throw = true
+        missing.push(required)
       }
     } else {
       required.forEach(env => {
         if (!testEnv(env)) {
           logError(env)
-          _throw = true
+          missing.push(env)
         }
       })
     }
@@ -64,8 +67,8 @@ const checkEnv = ({
       })
     }
   }
-  if (_throw && !noThrow) {
-    throwError()
+  if (missing.length > 0 && !noThrow) {
+    throwError(missing)
   }
 }
 

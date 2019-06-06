@@ -42,3 +42,21 @@ test('All required envs are available', () => {
   expect(() => checkEnv(input)).not.toThrowError()
   expect(console.error).not.toHaveBeenCalled()
 })
+
+test('Error message contains name of missing variable', () => {
+  const input = {
+    required: 'ZaxifpapEtM0XVeJ'
+  }
+  console.error = jest.fn()
+  expect(() => checkEnv(input)).toThrowError('ZaxifpapEtM0XVeJ')
+})
+
+test('Error message contains name of missing variables', () => {
+  const input = {
+    required: ['T4iDS6avN9J5ytTv', 'kIHJ1Cypg4prebal']
+  }
+  console.error = jest.fn()
+  expect(() => checkEnv(input)).toThrowError(
+    'T4iDS6avN9J5ytTv, kIHJ1Cypg4prebal'
+  )
+})
