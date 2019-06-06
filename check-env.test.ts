@@ -6,7 +6,7 @@ test('Empty options', () => {
 
 test('A single required env is missing', () => {
   const input = {
-    required: 'FOO'
+    required: 'KqtF_z3I5hiiCbv0'
   }
   console.error = jest.fn()
   expect(() => checkEnv(input)).toThrowError()
@@ -15,7 +15,7 @@ test('A single required env is missing', () => {
 
 test('All required envs are missing', () => {
   const input = {
-    required: ['FOO', 'BAR']
+    required: ['hk75zuxi0m2scNXE', 'XZ5MB992w_3iTSKQ']
   }
   console.error = jest.fn()
   expect(() => checkEnv(input)).toThrowError()
@@ -24,9 +24,9 @@ test('All required envs are missing', () => {
 
 test('Some required env are missing', () => {
   const input = {
-    required: ['FOO', 'BAR']
+    required: ['BedDlgTTxxTdwE14', 'ZqCc1IrEcFP2yn_Y']
   }
-  process.env.FOO = 'foo'
+  process.env.BedDlgTTxxTdwE14 = 'foo'
   console.error = jest.fn()
   expect(() => checkEnv(input)).toThrowError()
   expect(console.error).toHaveBeenCalledTimes(1)
@@ -34,10 +34,10 @@ test('Some required env are missing', () => {
 
 test('All required envs are available', () => {
   const input = {
-    required: ['FOO', 'BAR']
+    required: ['Lixn0eF52XWm31ie', 'GnyY_8f1ESMJcsop']
   }
-  process.env.FOO = 'foo'
-  process.env.BAR = 'bar'
+  process.env.Lixn0eF52XWm31ie = 'foo'
+  process.env.GnyY_8f1ESMJcsop = 'bar'
   console.error = jest.fn()
   expect(() => checkEnv(input)).not.toThrowError()
   expect(console.error).not.toHaveBeenCalled()
