@@ -18,11 +18,22 @@ const displayWarning = (name: string) => {
   console.warn(`⚠️  Environment variable ${name} is not set`)
 }
 
-const throwError = (missing: string[]) => {
-  const message = `Some required environment variables are missing: ${missing.join(
-    ', '
-  )}`
-  throw new Error(message)
+// --
+
+export class MissingEnvironmentVariableError extends Error {
+  readonly missing: {
+    required: string[]
+    optional: string[]
+  }
+
+  constructor(missingRequired: string[], missingOptional: string[]) {
+    const joined = missingRequired.join(', ')
+    super(`Some required environment variables are missing: ${joined}`)
+    this.missing = {
+      required: missingRequired,
+      optional: missingOptional
+    }
+  }
 }
 
 // --
@@ -37,19 +48,20 @@ const checkEnv = ({
   if (!required && !optional) {
     return
   }
-  let missing = []
+  let missingReq = []
+  let missingOpt = []
 
   if (required) {
     if (typeof required === 'string') {
       if (!testEnv(required)) {
         logError(required)
-        missing.push(required)
+        missingReq.push(required)
       }
     } else {
       required.forEach(env => {
         if (!testEnv(env)) {
           logError(env)
-          missing.push(env)
+          missingReq.push(env)
         }
       })
     }
@@ -58,17 +70,19 @@ const checkEnv = ({
     if (typeof optional === 'string') {
       if (!testEnv(optional)) {
         logWarning(optional)
+        missingOpt.push(optional)
       }
     } else {
       optional.forEach(env => {
         if (!testEnv(env)) {
           logWarning(env)
+          missingOpt.push(env)
         }
       })
     }
   }
-  if (missing.length > 0 && !noThrow) {
-    throwError(missing)
+  if (missingReq.length > 0 && !noThrow) {
+    throw new MissingEnvironmentVariableError(missingReq, missingOpt)
   }
 }
 
