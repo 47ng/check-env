@@ -2,6 +2,8 @@ export interface CheckEnvInput {
   required?: string | string[]
   optional?: string | string[]
   noThrow?: boolean
+  logError?: (name: string) => void
+  logWarning?: (name: string) => void
 }
 
 // --
@@ -22,7 +24,13 @@ const throwError = () => {
 
 // --
 
-const checkEnv = ({ required, optional, noThrow }: CheckEnvInput) => {
+const checkEnv = ({
+  required,
+  optional,
+  noThrow,
+  logError = displayError,
+  logWarning = displayWarning
+}: CheckEnvInput) => {
   if (!required && !optional) {
     return
   }
@@ -31,13 +39,13 @@ const checkEnv = ({ required, optional, noThrow }: CheckEnvInput) => {
   if (required) {
     if (typeof required === 'string') {
       if (!testEnv(required)) {
-        displayError(required)
+        logError(required)
         _throw = true
       }
     } else {
       required.forEach(env => {
         if (!testEnv(env)) {
-          displayError(env)
+          logError(env)
           _throw = true
         }
       })
@@ -46,12 +54,12 @@ const checkEnv = ({ required, optional, noThrow }: CheckEnvInput) => {
   if (optional) {
     if (typeof optional === 'string') {
       if (!testEnv(optional)) {
-        displayWarning(optional)
+        logWarning(optional)
       }
     } else {
       optional.forEach(env => {
         if (!testEnv(env)) {
-          displayWarning(env)
+          logWarning(env)
         }
       })
     }
