@@ -8,7 +8,7 @@ export interface CheckEnvInput {
 
 // --
 
-const testEnv = (name: string) => !!process.env[name]
+const testEnv = (name: string, env: NodeJS.ProcessEnv) => !!env[name]
 
 const displayError = (name: string) => {
   console.error(`❌  Missing required environment variable ${name}`)
@@ -38,13 +38,16 @@ export class MissingEnvironmentVariableError extends Error {
 
 // --
 
-const checkEnv = ({
-  required,
-  optional,
-  noThrow,
-  logError = displayError,
-  logWarning = displayWarning
-}: CheckEnvInput) => {
+const checkEnv = (
+  {
+    required,
+    optional,
+    noThrow,
+    logError = displayError,
+    logWarning = displayWarning
+  }: CheckEnvInput,
+  env: NodeJS.ProcessEnv = process.env
+) => {
   if (!required && !optional) {
     return { required: [], optional: [] }
   }
@@ -53,30 +56,30 @@ const checkEnv = ({
 
   if (required) {
     if (typeof required === 'string') {
-      if (!testEnv(required)) {
+      if (!testEnv(required, env)) {
         logError(required)
         missingReq.push(required)
       }
     } else {
-      required.forEach(env => {
-        if (!testEnv(env)) {
-          logError(env)
-          missingReq.push(env)
+      required.forEach(name => {
+        if (!testEnv(name, env)) {
+          logError(name)
+          missingReq.push(name)
         }
       })
     }
   }
   if (optional) {
     if (typeof optional === 'string') {
-      if (!testEnv(optional)) {
+      if (!testEnv(optional, env)) {
         logWarning(optional)
         missingOpt.push(optional)
       }
     } else {
-      optional.forEach(env => {
-        if (!testEnv(env)) {
-          logWarning(env)
-          missingOpt.push(env)
+      optional.forEach(name => {
+        if (!testEnv(name, env)) {
+          logWarning(name)
+          missingOpt.push(name)
         }
       })
     }

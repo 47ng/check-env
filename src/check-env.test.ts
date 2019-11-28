@@ -13,47 +13,53 @@ test('Empty options', () => {
 
 test('A single required env is missing', () => {
   const input = {
-    required: 'KqtF_z3I5hiiCbv0'
+    required: 'foo'
   }
+  const env = {}
   console.error = jest.fn()
   console.warn = jest.fn()
-  expect(() => checkEnv(input)).toThrowError()
+  expect(() => checkEnv(input, env)).toThrowError()
   expect(console.error).toHaveBeenCalledTimes(1)
   expect(console.warn).not.toHaveBeenCalled()
 })
 
 test('All required envs are missing', () => {
   const input = {
-    required: ['hk75zuxi0m2scNXE', 'XZ5MB992w_3iTSKQ']
+    required: ['foo', 'bar']
   }
+  const env = {}
   console.error = jest.fn()
   console.warn = jest.fn()
-  expect(() => checkEnv(input)).toThrowError()
+  expect(() => checkEnv(input, env)).toThrowError()
   expect(console.error).toHaveBeenCalledTimes(2)
   expect(console.warn).not.toHaveBeenCalled()
 })
 
 test('Some required env are missing', () => {
   const input = {
-    required: ['BedDlgTTxxTdwE14', 'ZqCc1IrEcFP2yn_Y']
+    required: ['foo', 'bar']
   }
-  process.env.BedDlgTTxxTdwE14 = 'foo'
+  const env = {
+    foo: 'foo'
+  }
   console.error = jest.fn()
   console.warn = jest.fn()
-  expect(() => checkEnv(input)).toThrowError()
+  expect(() => checkEnv(input, env)).toThrowError()
   expect(console.error).toHaveBeenCalledTimes(1)
   expect(console.warn).not.toHaveBeenCalled()
 })
 
 test('All required envs are available', () => {
   const input = {
-    required: ['Lixn0eF52XWm31ie', 'GnyY_8f1ESMJcsop']
+    required: ['foo', 'bar']
   }
-  process.env.Lixn0eF52XWm31ie = 'foo'
-  process.env.GnyY_8f1ESMJcsop = 'bar'
+  const env = {
+    foo: 'foo',
+    bar: 'bar'
+  }
   console.error = jest.fn()
   console.warn = jest.fn()
-  expect(() => checkEnv(input)).not.toThrowError()
+  checkEnv(input, env)
   expect(console.error).not.toHaveBeenCalled()
   expect(console.warn).not.toHaveBeenCalled()
 })
@@ -62,47 +68,52 @@ test('All required envs are available', () => {
 
 test('Error message type', () => {
   const input = {
-    required: 'EAgzgXu63HX7WbSL'
+    required: 'foo'
   }
-  expect(() => checkEnv(input)).toThrowError(MissingEnvironmentVariableError)
+  const env = {}
+  expect(() => checkEnv(input, env)).toThrowError(
+    MissingEnvironmentVariableError
+  )
 })
 
 test('Error message contains name of missing variable', () => {
   const input = {
-    required: 'ZaxifpapEtM0XVeJ',
-    optional: 'vtemZK65FQ3DtenN'
+    required: 'foo',
+    optional: 'bar'
   }
+  const env = {}
   try {
-    const run = () => checkEnv(input)
+    const run = () => checkEnv(input, env)
     run()
     expect(run).not.toHaveReturned() // Should throw
   } catch (error) {
     // Only missing required variables are shown in the message string
-    expect(error.message).toMatch('ZaxifpapEtM0XVeJ')
+    expect(error.message).toMatch('foo')
 
     // Details are available in the `missing` property of the error object:
     expect(error.missing).toEqual({
       // `required` and `optional` will always be arrays
-      required: ['ZaxifpapEtM0XVeJ'],
-      optional: ['vtemZK65FQ3DtenN']
+      required: ['foo'],
+      optional: ['bar']
     })
   }
 })
 
 test('Error message contains name of missing variables', () => {
   const input = {
-    required: ['T4iDS6avN9J5ytTv', 'kIHJ1Cypg4prebal'],
-    optional: ['oPAAIPUPPdY53Wrw', 'zi2V1TsorroZJ4tJ']
+    required: ['foo', 'bar'],
+    optional: ['egg', 'spam']
   }
+  const env = {}
   try {
-    const run = () => checkEnv(input)
+    const run = () => checkEnv(input, env)
     run()
     expect(run).not.toHaveReturned() // Should throw
   } catch (error) {
-    expect(error.message).toMatch('T4iDS6avN9J5ytTv, kIHJ1Cypg4prebal')
+    expect(error.message).toMatch('foo, bar')
     expect(error.missing).toEqual({
-      required: ['T4iDS6avN9J5ytTv', 'kIHJ1Cypg4prebal'],
-      optional: ['oPAAIPUPPdY53Wrw', 'zi2V1TsorroZJ4tJ']
+      required: ['foo', 'bar'],
+      optional: ['egg', 'spam']
     })
   }
 })
@@ -111,29 +122,47 @@ test('Error message contains name of missing variables', () => {
 
 test('No throw', () => {
   const input = {
-    required: ['HF3g9xYPpVfhbbPo', 'mM8xCEym9Pz66aDX'],
+    required: ['foo', 'bar'],
     noThrow: true
   }
+  const env = {}
   console.error = jest.fn()
   console.warn = jest.fn()
-  expect(() => checkEnv(input)).not.toThrowError()
+  checkEnv(input, env)
   expect(console.error).toHaveBeenCalledTimes(2)
   expect(console.warn).not.toHaveBeenCalled()
 })
 
 // --
 
+test('It returns the missing variables', () => {
+  const input = {
+    required: ['foo', 'bar'],
+    optional: ['egg', 'spam'],
+    noThrow: true
+  }
+  const env = {}
+  console.error = jest.fn()
+  console.warn = jest.fn()
+  const received = checkEnv(input, env)
+  expect(received.required).toEqual(['foo', 'bar'])
+  expect(received.optional).toEqual(['egg', 'spam'])
+})
+
+// --
+
 test('Custom logging methods', () => {
   const input: CheckEnvInput = {
-    required: ['zOVs80HV1qLSCfKs', 'VUpMkADjmmiftwwZ'],
-    optional: ['xdIAi6pFuhUq8doM', 'j9gicBYSogTRDlpO'],
+    required: ['foo', 'bar'],
+    optional: ['egg', 'spam'],
     logError: jest.fn(),
     logWarning: jest.fn(),
     noThrow: true
   }
+  const env = {}
   console.error = jest.fn()
   console.warn = jest.fn()
-  expect(() => checkEnv(input)).not.toThrowError()
+  checkEnv(input, env)
   expect(console.error).not.toHaveBeenCalled()
   expect(console.warn).not.toHaveBeenCalled()
   expect(input.logError).toHaveBeenCalledTimes(2)
