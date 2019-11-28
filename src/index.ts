@@ -46,7 +46,7 @@ const checkEnv = ({
   logWarning = displayWarning
 }: CheckEnvInput) => {
   if (!required && !optional) {
-    return
+    return { required: [], optional: [] }
   }
   let missingReq = []
   let missingOpt = []
@@ -83,6 +83,10 @@ const checkEnv = ({
   }
   if (missingReq.length > 0 && !noThrow) {
     throw new MissingEnvironmentVariableError(missingReq, missingOpt)
+  }
+  return {
+    required: missingReq,
+    optional: missingOpt
   }
 }
 
