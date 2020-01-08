@@ -1,6 +1,7 @@
 # `check-env`
 
-Check that the critical environment variables are set for your app.
+Check that the critical environment variables are set for your app,
+and that you did not leave dangerous development overrides in production.
 
 ## Installation
 
@@ -22,15 +23,8 @@ checkEnv({
     // ...
   ],
 
-  // Will log a warning if any of these are missing:
-  optional: [
-    'ENABLE_LOGGING',
-    'OPTIONAL_SERVICE_SECRET'
-    //...
-  ],
-
-  // Will log a warning if any of these are set in production:
-  unsafeForProduction: [
+  // Will log an error and throw if any of these are set in production:
+  unsafe: [
     'LOCAL_OVERRIDE_DISABLE_HTTPS',
     'INSECURE_COOKIES'
     // ...
@@ -57,7 +51,7 @@ checkEnv({
 
 By default, `check-env` uses `console.err` and `console.warn` with emoji.
 
-You can override the default logging methods with `logError` and `logWarning`.
+You can override the default logging methods with `logMissing` and `logUnsafe`.
 
 Example using [Pino](https://github.com/pinojs/pino):
 
@@ -65,8 +59,8 @@ Example using [Pino](https://github.com/pinojs/pino):
 const logger = require('pino')()
 
 checkEnv({
-  logError: name => logger.error(`Missing required environment variable ${name}`),
-  logWarning: name => logger.warn(`Missing optional environment variable ${name}`),
+  logMissing: name => logger.error(`Missing required environment variable ${name}`),
+  logUnsafe: name => logger.warn(`Unsafe environment variable ${name} set in production`),
   ...
 })
 ```

@@ -12,7 +12,7 @@ test('Empty options', () => {
 })
 
 test('A single required env is missing', () => {
-  const input = {
+  const input: CheckEnvInput = {
     required: 'foo'
   }
   const env = {}
@@ -24,7 +24,7 @@ test('A single required env is missing', () => {
 })
 
 test('All required envs are missing', () => {
-  const input = {
+  const input: CheckEnvInput = {
     required: ['foo', 'bar']
   }
   const env = {}
@@ -36,7 +36,7 @@ test('All required envs are missing', () => {
 })
 
 test('Some required env are missing', () => {
-  const input = {
+  const input: CheckEnvInput = {
     required: ['foo', 'bar']
   }
   const env = {
@@ -50,7 +50,7 @@ test('Some required env are missing', () => {
 })
 
 test('All required envs are available', () => {
-  const input = {
+  const input: CheckEnvInput = {
     required: ['foo', 'bar']
   }
   const env = {
@@ -67,7 +67,7 @@ test('All required envs are available', () => {
 // --
 
 test('Error message type', () => {
-  const input = {
+  const input: CheckEnvInput = {
     required: 'foo'
   }
   const env = {}
@@ -77,9 +77,8 @@ test('Error message type', () => {
 })
 
 test('Error message contains name of missing variable', () => {
-  const input = {
-    required: 'foo',
-    optional: 'bar'
+  const input: CheckEnvInput = {
+    required: 'foo'
   }
   const env = {}
   try {
@@ -91,18 +90,13 @@ test('Error message contains name of missing variable', () => {
     expect(error.message).toMatch('foo')
 
     // Details are available in the `missing` property of the error object:
-    expect(error.missing).toEqual({
-      // `required` and `optional` will always be arrays
-      required: ['foo'],
-      optional: ['bar']
-    })
+    expect(error.missing).toEqual(['foo'])
   }
 })
 
 test('Error message contains name of missing variables', () => {
-  const input = {
-    required: ['foo', 'bar'],
-    optional: ['egg', 'spam']
+  const input: CheckEnvInput = {
+    required: ['foo', 'bar']
   }
   const env = {}
   try {
@@ -111,17 +105,14 @@ test('Error message contains name of missing variables', () => {
     expect(run).not.toHaveReturned() // Should throw
   } catch (error) {
     expect(error.message).toMatch('foo, bar')
-    expect(error.missing).toEqual({
-      required: ['foo', 'bar'],
-      optional: ['egg', 'spam']
-    })
+    expect(error.missing).toEqual(['foo', 'bar'])
   }
 })
 
 // --
 
 test('No throw', () => {
-  const input = {
+  const input: CheckEnvInput = {
     required: ['foo', 'bar'],
     noThrow: true
   }
@@ -136,9 +127,8 @@ test('No throw', () => {
 // --
 
 test('It returns the missing variables', () => {
-  const input = {
+  const input: CheckEnvInput = {
     required: ['foo', 'bar'],
-    optional: ['egg', 'spam'],
     noThrow: true
   }
   const env = {}
@@ -146,7 +136,6 @@ test('It returns the missing variables', () => {
   console.warn = jest.fn()
   const received = checkEnv(input, env)
   expect(received.required).toEqual(['foo', 'bar'])
-  expect(received.optional).toEqual(['egg', 'spam'])
 })
 
 // --
@@ -154,31 +143,35 @@ test('It returns the missing variables', () => {
 test('Custom logging methods', () => {
   const input: CheckEnvInput = {
     required: ['foo', 'bar'],
-    optional: ['egg', 'spam'],
-    logError: jest.fn(),
-    logWarning: jest.fn(),
+    unsafe: ['egg', 'spam'],
+    logMissing: jest.fn(),
+    logUnsafe: jest.fn(),
     noThrow: true
   }
-  const env = {}
+  const env = {
+    NODE_ENV: 'production',
+    egg: 'egg',
+    spam: 'spam'
+  }
   console.error = jest.fn()
   console.warn = jest.fn()
   checkEnv(input, env)
   expect(console.error).not.toHaveBeenCalled()
-  expect(console.warn).not.toHaveBeenCalled()
-  expect(input.logError).toHaveBeenCalledTimes(2)
-  expect(input.logWarning).toHaveBeenCalledTimes(2)
+  expect(input.logMissing).toHaveBeenCalledTimes(2)
+  expect(input.logUnsafe).toHaveBeenCalledTimes(2)
 })
 
-test('Warn if sensitive variables are set in production', () => {
+test('Check if sensitive variables are set in production', () => {
   const input: CheckEnvInput = {
-    unsafeForProduction: ['foo'],
-    logWarning: jest.fn()
+    unsafe: ['foo'],
+    logUnsafe: jest.fn(),
+    noThrow: true
   }
   const env = {
     NODE_ENV: 'production',
     foo: 'foo'
   }
   const received = checkEnv(input, env)
-  expect(input.logWarning).toHaveBeenCalledTimes(1)
-  expect(received.unsafeForProduction).toEqual(['foo'])
+  expect(input.logUnsafe).toHaveBeenCalledTimes(1)
+  expect(received.unsafe).toEqual(['foo'])
 })

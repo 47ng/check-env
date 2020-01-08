@@ -1,39 +1,44 @@
 export interface CheckEnvInput {
   required?: string | string[]
-  optional?: string | string[]
-  unsafeForProduction?: string | string[]
+  unsafe?: string | string[]
   noThrow?: boolean
-  logError?: (name: string) => void
-  logWarning?: (name: string) => void
+  logMissing?: (name: string) => void
+  logUnsafe?: (name: string) => void
 }
 
 // --
 
 const testEnv = (name: string, env: NodeJS.ProcessEnv) => !!env[name]
 
-const displayError = (name: string) => {
+const displayMissing = (name: string) => {
   console.error(`❌  Missing required environment variable ${name}`)
 }
 
-const displayWarning = (name: string) => {
-  console.warn(`⚠️  Environment variable ${name} is not set`)
+const displayUnsafe = (name: string) => {
+  console.error(
+    `❌  Unsafe environment variable ${name} should not be set in production`
+  )
 }
 
 // --
 
 export class MissingEnvironmentVariableError extends Error {
-  readonly missing: {
-    required: string[]
-    optional: string[]
-  }
+  readonly missing: string[]
 
-  constructor(missingRequired: string[], missingOptional: string[]) {
-    const joined = missingRequired.join(', ')
+  constructor(envs: string[]) {
+    const joined = envs.join(', ')
     super(`Some required environment variables are missing: ${joined}`)
-    this.missing = {
-      required: missingRequired,
-      optional: missingOptional
-    }
+    this.missing = envs
+  }
+}
+
+export class UnsafeEnvironmentVariableError extends Error {
+  readonly unsafe: string[]
+
+  constructor(envs: string[]) {
+    const joined = envs.join(', ')
+    super(`Some unsafe environment variables are set in production: ${joined}`)
+    this.unsafe = envs
   }
 }
 
@@ -42,62 +47,44 @@ export class MissingEnvironmentVariableError extends Error {
 const checkEnv = (
   {
     required,
-    optional,
-    unsafeForProduction,
+    unsafe,
     noThrow,
-    logError = displayError,
-    logWarning = displayWarning
+    logMissing = displayMissing,
+    logUnsafe = displayUnsafe
   }: CheckEnvInput,
   env: NodeJS.ProcessEnv = process.env
 ) => {
   let missingReq = []
-  let missingOpt = []
   let unsafeProd = []
 
   if (required) {
     const name = required
     if (typeof name === 'string') {
       if (!testEnv(name, env)) {
-        logError(name)
+        logMissing(name)
         missingReq.push(name)
       }
     } else {
       name.forEach(name => {
         if (!testEnv(name, env)) {
-          logError(name)
+          logMissing(name)
           missingReq.push(name)
         }
       })
     }
   }
-  if (optional) {
-    const name = optional
-    if (typeof name === 'string') {
-      if (!testEnv(name, env)) {
-        logWarning(name)
-        missingOpt.push(name)
-      }
-    } else {
-      name.forEach(name => {
-        if (!testEnv(name, env)) {
-          logWarning(name)
-          missingOpt.push(name)
-        }
-      })
-    }
-  }
 
-  if (env.NODE_ENV === 'production' && unsafeForProduction) {
-    const name = unsafeForProduction
+  if (env.NODE_ENV === 'production' && unsafe) {
+    const name = unsafe
     if (typeof name === 'string') {
       if (testEnv(name, env)) {
-        logWarning(name)
+        logUnsafe(name)
         unsafeProd.push(name)
       }
     } else {
       name.forEach(name => {
         if (testEnv(name, env)) {
-          logWarning(name)
+          logUnsafe(name)
           unsafeProd.push(name)
         }
       })
@@ -105,12 +92,15 @@ const checkEnv = (
   }
 
   if (missingReq.length > 0 && !noThrow) {
-    throw new MissingEnvironmentVariableError(missingReq, missingOpt)
+    throw new MissingEnvironmentVariableError(missingReq)
   }
+  if (unsafeProd.length > 0 && !noThrow) {
+    throw new UnsafeEnvironmentVariableError(unsafeProd)
+  }
+
   return {
     required: missingReq,
-    optional: missingOpt,
-    unsafeForProduction: unsafeProd
+    unsafe: unsafeProd
   }
 }
 
