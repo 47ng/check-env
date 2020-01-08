@@ -168,3 +168,17 @@ test('Custom logging methods', () => {
   expect(input.logError).toHaveBeenCalledTimes(2)
   expect(input.logWarning).toHaveBeenCalledTimes(2)
 })
+
+test('Warn if sensitive variables are set in production', () => {
+  const input: CheckEnvInput = {
+    unsafeForProduction: ['foo'],
+    logWarning: jest.fn()
+  }
+  const env = {
+    NODE_ENV: 'production',
+    foo: 'foo'
+  }
+  const received = checkEnv(input, env)
+  expect(input.logWarning).toHaveBeenCalledTimes(1)
+  expect(received.unsafeForProduction).toEqual(['foo'])
+})

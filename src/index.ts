@@ -1,6 +1,7 @@
 export interface CheckEnvInput {
   required?: string | string[]
   optional?: string | string[]
+  unsafeForProduction?: string | string[]
   noThrow?: boolean
   logError?: (name: string) => void
   logWarning?: (name: string) => void
@@ -42,26 +43,26 @@ const checkEnv = (
   {
     required,
     optional,
+    unsafeForProduction,
     noThrow,
     logError = displayError,
     logWarning = displayWarning
   }: CheckEnvInput,
   env: NodeJS.ProcessEnv = process.env
 ) => {
-  if (!required && !optional) {
-    return { required: [], optional: [] }
-  }
   let missingReq = []
   let missingOpt = []
+  let unsafeProd = []
 
   if (required) {
-    if (typeof required === 'string') {
-      if (!testEnv(required, env)) {
-        logError(required)
-        missingReq.push(required)
+    const name = required
+    if (typeof name === 'string') {
+      if (!testEnv(name, env)) {
+        logError(name)
+        missingReq.push(name)
       }
     } else {
-      required.forEach(name => {
+      name.forEach(name => {
         if (!testEnv(name, env)) {
           logError(name)
           missingReq.push(name)
@@ -70,13 +71,14 @@ const checkEnv = (
     }
   }
   if (optional) {
-    if (typeof optional === 'string') {
-      if (!testEnv(optional, env)) {
-        logWarning(optional)
-        missingOpt.push(optional)
+    const name = optional
+    if (typeof name === 'string') {
+      if (!testEnv(name, env)) {
+        logWarning(name)
+        missingOpt.push(name)
       }
     } else {
-      optional.forEach(name => {
+      name.forEach(name => {
         if (!testEnv(name, env)) {
           logWarning(name)
           missingOpt.push(name)
@@ -84,12 +86,31 @@ const checkEnv = (
       })
     }
   }
+
+  if (env.NODE_ENV === 'production' && unsafeForProduction) {
+    const name = unsafeForProduction
+    if (typeof name === 'string') {
+      if (testEnv(name, env)) {
+        logWarning(name)
+        unsafeProd.push(name)
+      }
+    } else {
+      name.forEach(name => {
+        if (testEnv(name, env)) {
+          logWarning(name)
+          unsafeProd.push(name)
+        }
+      })
+    }
+  }
+
   if (missingReq.length > 0 && !noThrow) {
     throw new MissingEnvironmentVariableError(missingReq, missingOpt)
   }
   return {
     required: missingReq,
-    optional: missingOpt
+    optional: missingOpt,
+    unsafeForProduction: unsafeProd
   }
 }
 
