@@ -14,16 +14,26 @@ yarn add @47ng/check-env
 import checkEnv from '@47ng/check-env'
 
 checkEnv({
+  // Will log an error and throw if any of these are missing:
   required: [
     'SOME_API_SECRET',
     'PRIVATE_TOKEN',
     'SOME_OTHER_IMPORTANT_THING'
     // ...
   ],
+
+  // Will log a warning if any of these are missing:
   optional: [
     'ENABLE_LOGGING',
     'OPTIONAL_SERVICE_SECRET'
     //...
+  ],
+
+  // Will log a warning if any of these are set in production:
+  unsafeForProduction: [
+    'LOCAL_OVERRIDE_DISABLE_HTTPS',
+    'INSECURE_COOKIES'
+    // ...
   ]
 })
 ```
