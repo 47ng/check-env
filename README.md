@@ -3,6 +3,13 @@
 Check that the critical environment variables are set for your app,
 and that you did not leave dangerous development overrides in production.
 
+[![NPM](https://img.shields.io/npm/v/@47ng/check-env?color=red)](https://www.npmjs.com/package/@47ng/check-env)
+[![MIT License](https://img.shields.io/github/license/47ng/check-env.svg?color=blue)](https://github.com/47ng/check-env/blob/master/LICENSE)
+[![Travis CI Build](https://img.shields.io/travis/com/47ng/check-env.svg)](https://travis-ci.com/47ng/check-env)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=47ng/env-alias)](https://dependabot.com)
+[![Average issue resolution time](https://isitmaintained.com/badge/resolution/47ng/check-env.svg)](https://isitmaintained.com/project/47ng/check-env)
+[![Number of open issues](https://isitmaintained.com/badge/open/47ng/check-env.svg)](https://isitmaintained.com/project/47ng/check-env)
+
 ## Installation
 
 ```
