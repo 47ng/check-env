@@ -56,7 +56,7 @@ checkEnv({
 
 ## Logging
 
-By default, `check-env` uses `console.err` and `console.warn` with emoji.
+By default, `check-env` uses `console.err` with emoji.
 
 You can override the default logging methods with `logMissing` and `logUnsafe`.
 
