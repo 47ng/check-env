@@ -1,6 +1,7 @@
 import checkEnv, {
   CheckEnvInput,
-  MissingEnvironmentVariableError
+  MissingEnvironmentVariableError,
+  UnsafeEnvironmentVariableError
 } from './index'
 
 test('Empty options', () => {
@@ -46,6 +47,20 @@ test('Some required env are missing', () => {
   console.warn = jest.fn()
   expect(() => checkEnv(input, env)).toThrowError()
   expect(console.error).toHaveBeenCalledTimes(1)
+  expect(console.warn).not.toHaveBeenCalled()
+})
+
+test('A single required envs is available', () => {
+  const input: CheckEnvInput = {
+    required: 'foo'
+  }
+  const env = {
+    foo: 'foo'
+  }
+  console.error = jest.fn()
+  console.warn = jest.fn()
+  checkEnv(input, env)
+  expect(console.error).not.toHaveBeenCalled()
   expect(console.warn).not.toHaveBeenCalled()
 })
 
@@ -161,6 +176,21 @@ test('Custom logging methods', () => {
   expect(input.logUnsafe).toHaveBeenCalledTimes(2)
 })
 
+test('Check if sensitive variable is set in production', () => {
+  const input: CheckEnvInput = {
+    unsafe: 'foo',
+    logUnsafe: jest.fn(),
+    noThrow: true
+  }
+  const env = {
+    NODE_ENV: 'production',
+    foo: 'foo'
+  }
+  const received = checkEnv(input, env)
+  expect(input.logUnsafe).toHaveBeenCalledTimes(1)
+  expect(received.unsafe).toEqual(['foo'])
+})
+
 test('Check if sensitive variables are set in production', () => {
   const input: CheckEnvInput = {
     unsafe: ['foo'],
@@ -174,4 +204,59 @@ test('Check if sensitive variables are set in production', () => {
   const received = checkEnv(input, env)
   expect(input.logUnsafe).toHaveBeenCalledTimes(1)
   expect(received.unsafe).toEqual(['foo'])
+})
+
+test('No sensitive variable is defined', () => {
+  const input: CheckEnvInput = {
+    unsafe: 'foo',
+    logUnsafe: jest.fn(),
+    noThrow: true
+  }
+  const env = {
+    NODE_ENV: 'production'
+  }
+  const received = checkEnv(input, env)
+  expect(input.logUnsafe).not.toHaveBeenCalled()
+  expect(received.unsafe).toEqual([])
+})
+
+test('No sensitive variables are defined', () => {
+  const input: CheckEnvInput = {
+    unsafe: ['foo'],
+    logUnsafe: jest.fn(),
+    noThrow: true
+  }
+  const env = {
+    NODE_ENV: 'production'
+  }
+  const received = checkEnv(input, env)
+  expect(input.logUnsafe).not.toHaveBeenCalled()
+  expect(received.unsafe).toEqual([])
+})
+
+test('Unsafe variables are logged to the console', () => {
+  const input: CheckEnvInput = {
+    unsafe: ['foo'],
+    noThrow: true
+  }
+  const env = {
+    NODE_ENV: 'production',
+    foo: 'foo'
+  }
+  console.error = jest.fn()
+  checkEnv(input, env)
+  expect(console.error).toHaveBeenCalledTimes(1)
+})
+
+test('Unsafe variables throw an error', () => {
+  const input: CheckEnvInput = {
+    unsafe: ['foo']
+  }
+  const env = {
+    NODE_ENV: 'production',
+    foo: 'foo'
+  }
+  expect(() => checkEnv(input, env)).toThrowError(
+    UnsafeEnvironmentVariableError
+  )
 })
