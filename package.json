@@ -30,7 +30,7 @@
     "ci": "run-s test build"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^9.0.1",
+    "@commitlint/config-conventional": "^11.0.0",
     "@types/jest": "^26.0.0",
     "@types/node": "^14.0.1",
     "commitlint": "^11.0.0",
