@@ -2,6 +2,7 @@
   "name": "@47ng/check-env",
   "version": "0.0.0-semantically-released",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "description": "Check that the critical environment variables are set",
   "license": "MIT",
   "author": {
