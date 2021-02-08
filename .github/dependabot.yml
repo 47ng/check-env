@@ -8,9 +8,17 @@ updates:
       timezone: Europe/Paris
     assignees:
       - franky47
+    labels:
+      - dependencies
+      - javascript
+      - valet:merge
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
     assignees:
       - franky47
+    labels:
+      - dependencies
+      - github_actions
+      - valet:merge
