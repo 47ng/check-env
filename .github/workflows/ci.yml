@@ -14,6 +14,8 @@ jobs:
     name: Continuous Integration
     runs-on: ubuntu-latest
     steps:
+      - run: echo "${{ env }}"
+        name: Display PR env
       - id: yarn-cache
         name: Get Yarn cache path
         run: echo "::set-output name=dir::$(yarn cache dir)"
