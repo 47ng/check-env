@@ -53,6 +53,23 @@ checkEnv({
 })
 ```
 
+## Conditional Checks
+
+If you want to require some variables only in production, you can add a condition
+before the variable name, any falsy value will be ignored:
+
+```ts
+const __PROD__ = process.env.NODE_ENV === 'production'
+
+checkEnv({
+  required: [
+    'ALWAYS_REQUIRED',
+    __PROD__ && 'ONLY_REQUIRED_IN_PRODUCTION',
+    !__PROD__ && 'YOU_GET_THE_IDEA'
+  ]
+})
+```
+
 ## Logging
 
 By default, `check-env` uses `console.err` with emoji.

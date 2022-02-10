@@ -260,3 +260,26 @@ test('Unsafe variables throw an error', () => {
     UnsafeEnvironmentVariableError
   )
 })
+
+test('falsy values are ignored', () => {
+  const input: CheckEnvInput = {
+    required: [
+      false && 'false',
+      null && 'null',
+      undefined && 'undefined',
+      0 && 'zero',
+      NaN && 'NaN'
+    ],
+    unsafe: [
+      false && 'false',
+      null && 'null',
+      undefined && 'undefined',
+      0 && 'zero',
+      NaN && 'NaN'
+    ]
+  }
+  const env = {
+    NODE_ENV: 'production'
+  }
+  expect(() => checkEnv(input, env)).not.toThrow()
+})

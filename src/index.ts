@@ -1,6 +1,8 @@
+type Falsy = false | undefined | null | 0
+
 export interface CheckEnvInput {
-  required?: string | string[]
-  unsafe?: string | string[]
+  required?: string | Array<string | Falsy>
+  unsafe?: string | Array<string | Falsy>
   noThrow?: boolean
   logMissing?: (name: string) => void
   logUnsafe?: (name: string) => void
@@ -8,7 +10,7 @@ export interface CheckEnvInput {
 
 // --
 
-const testEnv = (name: string, env: NodeJS.ProcessEnv) => !!env[name]
+const testEnv = (name: string, env: NodeJS.ProcessEnv) => Boolean(env[name])
 
 const displayMissing = (name: string) => {
   console.error(`❌  Missing required environment variable ${name}`)
@@ -66,6 +68,9 @@ const checkEnv = (
       }
     } else {
       name.forEach(name => {
+        if (!name) {
+          return
+        }
         if (!testEnv(name, env)) {
           logMissing(name)
           missingReq.push(name)
@@ -83,6 +88,9 @@ const checkEnv = (
       }
     } else {
       name.forEach(name => {
+        if (!name) {
+          return
+        }
         if (testEnv(name, env)) {
           logUnsafe(name)
           unsafeProd.push(name)

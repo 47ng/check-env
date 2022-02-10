@@ -13,7 +13,8 @@ checkEnv(
     required: [
       'SOME_API_SECRET',
       'PRIVATE_TOKEN',
-      'SOME_OTHER_IMPORTANT_THING'
+      'SOME_OTHER_IMPORTANT_THING',
+      process.env.NODE_ENV === 'production' && 'ONLY_REQUIRED_IN_PRODUCTION'
       // ...
     ],
 
