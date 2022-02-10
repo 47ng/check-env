@@ -101,11 +101,12 @@ test('Error message contains name of missing variable', () => {
     run()
     expect(run).not.toHaveReturned() // Should throw
   } catch (error) {
+    expect(error).toBeInstanceOf(MissingEnvironmentVariableError)
+    const e = error as MissingEnvironmentVariableError
     // Only missing required variables are shown in the message string
-    expect(error.message).toMatch('foo')
-
+    expect(e.message).toMatch('foo')
     // Details are available in the `missing` property of the error object:
-    expect(error.missing).toEqual(['foo'])
+    expect(e.missing).toEqual(['foo'])
   }
 })
 
@@ -119,8 +120,10 @@ test('Error message contains name of missing variables', () => {
     run()
     expect(run).not.toHaveReturned() // Should throw
   } catch (error) {
-    expect(error.message).toMatch('foo, bar')
-    expect(error.missing).toEqual(['foo', 'bar'])
+    expect(error).toBeInstanceOf(MissingEnvironmentVariableError)
+    const e = error as MissingEnvironmentVariableError
+    expect(e.message).toMatch('foo, bar')
+    expect(e.missing).toEqual(['foo', 'bar'])
   }
 })
 
