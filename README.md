@@ -1,13 +1,18 @@
-# `check-env`
+<h1 align="center"><code>@47ng/check-env</code></h1>
 
-Check that the critical environment variables are set for your app,
-and that you did not leave dangerous development overrides in production.
+<div align="center">
 
 [![NPM](https://img.shields.io/npm/v/@47ng/check-env?color=red)](https://www.npmjs.com/package/@47ng/check-env)
 [![MIT License](https://img.shields.io/github/license/47ng/check-env.svg?color=blue)](https://github.com/47ng/check-env/blob/next/LICENSE)
 [![Continuous Integration](https://github.com/47ng/check-env/workflows/Continuous%20Integration/badge.svg?branch=next)](https://github.com/47ng/check-env/actions)
 [![Coverage Status](https://coveralls.io/repos/github/47ng/check-env/badge.svg?branch=next)](https://coveralls.io/github/47ng/check-env?branch=next)
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=47ng/check-env)](https://dependabot.com)
+
+</div>
+
+<p align="center">
+  Check that the critical environment variables are set for your app,
+  and that you did not leave dangerous development overrides in production.
+</p>
 
 ## Installation
 
