@@ -31,7 +31,7 @@
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^16.0.0",
+    "@commitlint/config-conventional": "^17.1.0",
     "@types/jest": "^27.4.0",
     "@types/node": "^17.0.17",
     "commitlint": "^16.1.0",
