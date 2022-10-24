@@ -1,0 +1,13 @@
+name: CI/CD
+
+on:
+  push:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  ci-cd:
+    uses: 47ng/.github/workflows/node-ci-cd.yml@main
+    secrets:
+      githubToken: ${{ secrets.GITHUB_TOKEN }}
+      npmToken: ${{ secrets.NPM_TOKEN }}
