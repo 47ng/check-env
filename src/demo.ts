@@ -1,4 +1,4 @@
-import checkEnv from './index'
+import { checkEnv } from './index'
 
 const env = {
   NODE_ENV: 'production',

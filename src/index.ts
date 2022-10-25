@@ -46,7 +46,7 @@ export class UnsafeEnvironmentVariableError extends Error {
 
 // --
 
-const checkEnv = (
+export const checkEnv = (
   {
     required,
     unsafe,
@@ -111,5 +111,3 @@ const checkEnv = (
     unsafe: unsafeProd
   }
 }
-
-export default checkEnv

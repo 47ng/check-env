@@ -4,10 +4,10 @@
     "target": "es2018",
     "lib": ["DOM"],
     "module": "commonjs",
-    "declaration": true,
-    "outDir": "./dist",
     "rootDir": "./src",
+    "moduleResolution": "node",
     "esModuleInterop": true,
+    "noEmit": true,
 
     // Strict Type-Checking Options
     "strict": true,

@@ -1,4 +1,5 @@
-import checkEnv, {
+import {
+  checkEnv,
   CheckEnvInput,
   MissingEnvironmentVariableError,
   UnsafeEnvironmentVariableError

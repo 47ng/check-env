@@ -23,7 +23,7 @@ yarn add @47ng/check-env
 ## Usage
 
 ```js
-import checkEnv from '@47ng/check-env'
+import { checkEnv } from '@47ng/check-env'
 
 checkEnv({
   // Will log an error and throw if any of these are missing:
